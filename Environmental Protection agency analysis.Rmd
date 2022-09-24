@@ -1,0 +1,731 @@
+---
+title: "Final Project"
+author: "Abhishek Soalnki"
+date: "10/16/2020"
+output: word_document
+---
+
+# Introduction
+This dataset provides fuel economy data from 2010 and 2020 for popular models of cars.
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(tidyverse)
+library(Hmisc)
+library(funModeling)
+```
+
+<!-- Setting the working directory -->
+```{r}
+setwd("C:/Users/abhis/Documents/Final case")
+```
+
+<!-- loading data frames from the working directory -->
+
+```{r}
+df2010 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2010.csv", header = TRUE)
+df2011 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2011.csv", header = TRUE)
+df2012 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2012.csv", header = TRUE)
+
+df2014 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2014.csv", header = TRUE)
+df2015 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2015.csv", header = TRUE)
+df2016 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2016.csv", header = TRUE)
+
+df2018 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2018.csv", header = TRUE)
+df2019 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2019.csv", header = TRUE)
+df2020 <- read.csv(file = "C:/Users/abhis/Documents/Final case/data2020.csv", header = TRUE)
+```
+
+## Merging and cleaning data
+#The data is merged into three large files. First, 2012 to 2012; Second, 2014 to 2016; Third, 2018 to 2020.
+```{r}
+df2010to12 <- rbind(df2010,df2011,df2012)
+df2014to16 <- rbind(df2014,df2015,df2016)
+df2018to20 <- rbind(df2018,df2019,df2020)
+```
+# Cleaning the merged data
+Once the data is merged. It must be cleaned to avoid outliers and bad data. Data Cleaning is the process of transforming raw data into consistent data that can be analyzed. It is aimed at improving the content of statistical statements based on the data as well as their reliability. Data cleaning may profoundly influence the statistical statements based on the data.
+
+Data cleaning process was accomplished in three steps i.e. 
+1. Initial exploratory analysis
+2. Visualazation exploration
+3. NA cleaning
+
+# Initial exploratory analysis
+The first thing that I did is check the class of the data frame:
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+class(df2010to12)
+class(df2014to16)
+class(df2018to20)
+```
+Next, the number of columns and rows were checked for each dataframe
+```{r}
+dim(df2010to12)
+dim(df2014to16)
+dim(df2018to20)
+```
+Finally, the summary of the data was analyzed
+```{r}
+summary(df2010to12)
+```
+
+The summary data above indicates that 73 data values in the column  RND_ADJ_FE for miles per gallon are missing. The missing values were replaced with the median to make the data consistent.
+
+
+```{r}
+# Number of missing miles per gallon values
+df2010to12 %>%
+summarise(count = sum(is.na(RND_ADJ_FE)))
+
+```
+
+# NA cleaning for 2010 to 2012 dataframe
+
+```{r}
+# Replace missing values with the median for all numerical values
+# mutate missing values, and modify the dataframe
+df2010to12 <- df2010to12 %>%
+  mutate(RND_ADJ_FE = replace(RND_ADJ_FE,
+                                  is.na(RND_ADJ_FE),
+                                  median(RND_ADJ_FE, na.rm = TRUE)))
+#  X..of.Cylinders.and.Rotors column
+df2010to12 <- df2010to12 %>%
+  mutate( X..of.Cylinders.and.Rotors = replace( X..of.Cylinders.and.Rotors,
+                                  is.na( X..of.Cylinders.and.Rotors),
+                                  median( X..of.Cylinders.and.Rotors, na.rm = TRUE)))
+# THC..g.mi. column
+df2010to12 <- df2010to12 %>%
+  mutate(THC..g.mi. = replace(THC..g.mi.,
+                                  is.na(THC..g.mi.),
+                                  median(THC..g.mi., na.rm = TRUE)))
+
+# CO..g.mi. column
+df2010to12 <- df2010to12 %>%
+  mutate(CO..g.mi.  = replace(CO..g.mi. ,
+                                  is.na(CO..g.mi. ),
+                                  median(CO..g.mi. , na.rm = TRUE)))
+
+# CO2..g.mi.  column
+df2010to12 <- df2010to12 %>%
+  mutate(CO2..g.mi.  = replace(CO2..g.mi. ,
+                                  is.na(CO2..g.mi. ),
+                                  median(CO2..g.mi. , na.rm = TRUE)))
+
+# NOx..g.mi.  column
+df2010to12 <- df2010to12 %>%
+  mutate(NOx..g.mi.  = replace(NOx..g.mi. ,
+                                  is.na(NOx..g.mi. ),
+                                  median(NOx..g.mi. , na.rm = TRUE)))
+# CH4..g.mi.  column
+df2010to12 <- df2010to12 %>%
+  mutate(CH4..g.mi.  = replace(CH4..g.mi. ,
+                                  is.na(CH4..g.mi. ),
+                                  median(CH4..g.mi. , na.rm = TRUE)))
+
+# N2O..g.mi.  column
+df2010to12 <- df2010to12 %>%
+  mutate(N2O..g.mi.  = replace(N2O..g.mi. ,
+                                  is.na(N2O..g.mi.),
+                                  median(N2O..g.mi. , na.rm = TRUE)))
+
+# FE.Bag.1   column
+df2010to12 <- df2010to12 %>%
+  mutate(FE.Bag.1   = replace(FE.Bag.1  ,
+                                  is.na(FE.Bag.1  ),
+                                  median(FE.Bag.1  , na.rm = TRUE)))
+
+# FE.Bag.2  column
+df2010to12 <- df2010to12 %>%
+  mutate(FE.Bag.2  = replace(FE.Bag.2,
+                                  is.na(FE.Bag.2 ),
+                                  median(FE.Bag.2 , na.rm = TRUE)))
+
+# FE.Bag.3 column
+df2010to12 <- df2010to12 %>%
+  mutate(FE.Bag.3  = replace(FE.Bag.3,
+                                  is.na(FE.Bag.3 ),
+                                  median(FE.Bag.3 , na.rm = TRUE)))
+
+```
+
+# NA cleaning for 2014 to 2016 dataframe
+```{r}
+# Replace missing values with the median for all numerical values
+# mutate missing values, and modify the dataframe
+df2014to16 <- df2014to16 %>%
+  mutate(RND_ADJ_FE = replace(RND_ADJ_FE,
+                                  is.na(RND_ADJ_FE),
+                                  median(RND_ADJ_FE, na.rm = TRUE)))
+#  X..of.Cylinders.and.Rotors column
+df2014to16 <- df2014to16 %>%
+  mutate( X..of.Cylinders.and.Rotors = replace( X..of.Cylinders.and.Rotors,
+                                  is.na( X..of.Cylinders.and.Rotors),
+                                  median( X..of.Cylinders.and.Rotors, na.rm = TRUE)))
+# THC..g.mi. column
+df2014to16 <- df2014to16 %>%
+  mutate(THC..g.mi. = replace(THC..g.mi.,
+                                  is.na(THC..g.mi.),
+                                  median(THC..g.mi., na.rm = TRUE)))
+
+# CO..g.mi. column
+df2014to16 <- df2014to16 %>%
+  mutate(CO..g.mi.  = replace(CO..g.mi. ,
+                                  is.na(CO..g.mi. ),
+                                  median(CO..g.mi. , na.rm = TRUE)))
+
+# CO2..g.mi.  column
+df2014to16 <- df2014to16 %>%
+  mutate(CO2..g.mi.  = replace(CO2..g.mi. ,
+                                  is.na(CO2..g.mi. ),
+                                  median(CO2..g.mi. , na.rm = TRUE)))
+
+# NOx..g.mi.  column
+df2014to16 <- df2014to16 %>%
+  mutate(NOx..g.mi.  = replace(NOx..g.mi. ,
+                                  is.na(NOx..g.mi. ),
+                                  median(NOx..g.mi. , na.rm = TRUE)))
+# CH4..g.mi.  column
+df2014to16 <- df2014to16 %>%
+  mutate(CH4..g.mi.  = replace(CH4..g.mi. ,
+                                  is.na(CH4..g.mi. ),
+                                  median(CH4..g.mi. , na.rm = TRUE)))
+
+# N2O..g.mi.  column
+df2014to16 <- df2014to16 %>%
+  mutate(N2O..g.mi.  = replace(N2O..g.mi. ,
+                                  is.na(N2O..g.mi.),
+                                  median(N2O..g.mi. , na.rm = TRUE)))
+
+# FE.Bag.1   column
+df2014to16 <- df2014to16 %>%
+  mutate(FE.Bag.1   = replace(FE.Bag.1  ,
+                                  is.na(FE.Bag.1  ),
+                                  median(FE.Bag.1  , na.rm = TRUE)))
+
+# FE.Bag.2  column
+df2014to16 <- df2014to16 %>%
+  mutate(FE.Bag.2  = replace(FE.Bag.2,
+                                  is.na(FE.Bag.2 ),
+                                  median(FE.Bag.2 , na.rm = TRUE)))
+
+# FE.Bag.3 column
+df2014to16 <- df2014to16 %>%
+  mutate(FE.Bag.3  = replace(FE.Bag.3,
+                                  is.na(FE.Bag.3 ),
+                                  median(FE.Bag.3 , na.rm = TRUE)))
+
+```
+
+
+# NA cleaning for 2014 to 2016 dataframe
+```{r}
+# Replace missing values with the median for all numerical values
+# mutate missing values, and modify the dataframe
+df2018to20 <- df2018to20 %>%
+  mutate(RND_ADJ_FE = replace(RND_ADJ_FE,
+                                  is.na(RND_ADJ_FE),
+                                  median(RND_ADJ_FE, na.rm = TRUE)))
+#  X..of.Cylinders.and.Rotors column
+df2018to20 <- df2018to20 %>%
+  mutate( X..of.Cylinders.and.Rotors = replace( X..of.Cylinders.and.Rotors,
+                                  is.na( X..of.Cylinders.and.Rotors),
+                                  median( X..of.Cylinders.and.Rotors, na.rm = TRUE)))
+# THC..g.mi. column
+df2018to20 <- df2018to20 %>%
+  mutate(THC..g.mi. = replace(THC..g.mi.,
+                                  is.na(THC..g.mi.),
+                                  median(THC..g.mi., na.rm = TRUE)))
+
+# CO..g.mi. column
+df2018to20 <- df2018to20 %>%
+  mutate(CO..g.mi.  = replace(CO..g.mi. ,
+                                  is.na(CO..g.mi. ),
+                                  median(CO..g.mi. , na.rm = TRUE)))
+
+# CO2..g.mi.  column
+df2018to20 <- df2018to20 %>%
+  mutate(CO2..g.mi.  = replace(CO2..g.mi. ,
+                                  is.na(CO2..g.mi. ),
+                                  median(CO2..g.mi. , na.rm = TRUE)))
+
+# NOx..g.mi.  column
+df2018to20 <- df2018to20 %>%
+  mutate(NOx..g.mi.  = replace(NOx..g.mi. ,
+                                  is.na(NOx..g.mi. ),
+                                  median(NOx..g.mi. , na.rm = TRUE)))
+# CH4..g.mi.  column
+df2018to20 <- df2018to20 %>%
+  mutate(CH4..g.mi.  = replace(CH4..g.mi. ,
+                                  is.na(CH4..g.mi. ),
+                                  median(CH4..g.mi. , na.rm = TRUE)))
+
+# N2O..g.mi.  column
+df2018to20 <- df2018to20 %>%
+  mutate(N2O..g.mi.  = replace(N2O..g.mi. ,
+                                  is.na(N2O..g.mi.),
+                                  median(N2O..g.mi. , na.rm = TRUE)))
+
+# FE.Bag.1   column
+df2018to20 <- df2018to20 %>%
+  mutate(FE.Bag.1   = replace(FE.Bag.1  ,
+                                  is.na(FE.Bag.1  ),
+                                  median(FE.Bag.1  , na.rm = TRUE)))
+
+# FE.Bag.2  column
+df2018to20 <- df2018to20 %>%
+  mutate(FE.Bag.2  = replace(FE.Bag.2,
+                                  is.na(FE.Bag.2 ),
+                                  median(FE.Bag.2 , na.rm = TRUE)))
+
+# FE.Bag.3 column
+df2018to20 <- df2018to20 %>%
+  mutate(FE.Bag.3  = replace(FE.Bag.3,
+                                  is.na(FE.Bag.3 ),
+                                  median(FE.Bag.3 , na.rm = TRUE)))
+
+```
+
+
+
+```{r}
+# Confirming the missing values have been replaced with the median
+# Miles per gallon column
+df2010to12 %>%
+summarise(count = sum(is.na(RND_ADJ_FE)))
+
+# X..of.Cylinders.and.Rotors column
+df2010to12 %>%
+summarise(count = sum(is.na( X..of.Cylinders.and.Rotors )))
+
+#here
+# THC..g.mi. column
+df2010to12 %>%
+summarise(count = sum(is.na( THC..g.mi. )))
+
+# CO..g.mi. column
+df2010to12 %>%
+summarise(count = sum(is.na( CO..g.mi. )))
+
+# CO2..g.mi. column
+df2010to12 %>%
+summarise(count = sum(is.na( CO2..g.mi.  )))
+
+# NOx..g.mi. column
+df2010to12 %>%
+summarise(count = sum(is.na( NOx..g.mi. )))
+
+# CH4..g.mi. column
+df2010to12 %>%
+summarise(count = sum(is.na( CH4..g.mi. )))
+
+# X..of.Cylinders.and.Rotors column
+df2010to12 %>%
+summarise(count = sum(is.na( N2O..g.mi. )))
+
+# X..of.Cylinders.and.Rotors column
+df2010to12 %>%
+summarise(count = sum(is.na( FE.Bag.1  )))
+# X..of.Cylinders.and.Rotors column
+df2010to12 %>%
+summarise(count = sum(is.na( FE.Bag.2 )))
+# X..of.Cylinders.and.Rotors column
+df2010to12 %>%
+summarise(count = sum(is.na( FE.Bag.3 )))
+
+
+```
+
+```{r}
+# Inspecting CO2 emissions
+ggplot(data = df2010to12, aes(CO2..g.mi.))+geom_histogram()
+
+```
+
+The distribution of CO2.g.mi is close to normal distribution, so it can be fit to a linear model.However, the CO2.g.mi data contains 831 missing values that need to be cleaned. For this case, the missing values were replaced with the median of the CO2.g.mi data.
+
+
+# Outlier detection on the CO2..g.mi using a box plot
+```{r}
+ggplot(data = df2010to12, mapping = aes(x = "",y = CO2..g.mi.)) +
+geom_boxplot()
+
+ggplot(df2010to12, aes(RND_ADJ_FE)) +
+  geom_histogram(binwidth = 2) + xlab('Miles per Gallon') + ylab('Number of Cars') + 
+   ggtitle('Distribution of Cars by Mileage')
+
+# Extracting the potential outliers
+
+outliers <- boxplot.stats(df2010to12$CO2..g.mi.)$out
+min(outliers)
+sum(outliers > 812.5)
+```
+
+The extracted potential outliers are 217 in total. This is equal to 1.94% of the total observations.The minimum outlier value being 628.88. However, cross-checking with the CO2 emission histogram, the outliers lie beyond 812.5. These values are thirteen and equal 0.12% of the total observations. The dataframe was mutated to exclude these 13 values. 
+```{r}
+# Exclude CO2 emission values greater than 812.5 as outliers
+# df2010to12 <- df2010to12[-c(df2010to12$CO2..g.mi. > 812.5)]
+
+dim(df2010to12)
+```
+
+
+
+
+```{r}
+summary(df2014to16)
+```
+
+```{r}
+# Number of missing miles per gallon values
+df2014to16 %>%
+summarise(count = sum(is.na(RND_ADJ_FE)))
+
+```
+
+
+
+```{r}
+# Replace missing values with the median
+# mutate missing values, and modify the dataframe
+df2014to16 <- df2014to16 %>%
+  mutate(RND_ADJ_FE = replace(RND_ADJ_FE,
+                                  is.na(RND_ADJ_FE),
+                                  median(RND_ADJ_FE, na.rm = TRUE)))
+
+```
+
+
+```{r}
+# Confirming the missing values have been replaced with the median
+df2014to16 %>%
+summarise(count = sum(is.na(RND_ADJ_FE)))
+```
+
+```{r}
+# Inspecting emissions
+ggplot(data = df2014to16, aes(CO2..g.mi.))+geom_histogram()
+
+```
+
+The distribution of CO2.g.mi is close to normal distribution, so it can be fit to a linear model.However, the CO2.g.mi data contains 831 missing values that need to be cleaned. For this case, the missing values were replaced with the median of the CO2.g.mi data.
+
+
+```{r}
+# Number of missing CO2.g.mi values
+df2014to16 %>%
+summarise(count = sum(is.na(CO2..g.mi.)))
+
+# mutate missing values, and modify the dataframe
+df2014to16 <- df2014to16 %>%
+  mutate(CO2..g.mi. = replace(CO2..g.mi.,
+                                  is.na(CO2..g.mi.),
+                                  median(CO2..g.mi., na.rm = TRUE)))
+
+# The cleaned data histogram
+ggplot(data = df2014to16, aes(CO2..g.mi.))+geom_histogram()
+
+```
+
+
+#### Outlier detection on the CO2..g.mi using a box plot
+```{r}
+ggplot(data = df2014to16, mapping = aes(x = "",y = CO2..g.mi.)) +
+geom_boxplot()
+
+# Extracting the potential outliers
+
+outliers <- boxplot.stats(df2014to16$CO2..g.mi.)$out
+min(outliers)
+sum(outliers > 812.5)
+```
+
+The extracted potential outliers are 217 in total. This is equal to 1.94% of the total observations.The minimum outlier value being 628.88. However, cross-checking with the CO2 emission histogram, the outliers lie beyond 812.5. These values are thirteen and equal 0.12% of the total observations. The dataframe was mutated to exclude these 13 values. 
+```{r}
+# Exclude CO2 emission values greater than 812.5 as outliers
+# df2010to12 <- df2010to12[-c(df2010to12$CO2..g.mi. > 812.5)]
+
+dim(df2014to16)
+```
+
+
+
+
+```{r}
+summary(df2018to20)
+```
+
+
+```{r}
+# Number of missing miles per gallon values
+df2018to20 %>%
+summarise(count = sum(is.na(RND_ADJ_FE)))
+
+```
+
+
+
+```{r}
+# Replace missing values with the median
+# mutate missing values, and modify the dataframe
+df2018to20 <- df2018to20 %>%
+  mutate(RND_ADJ_FE = replace(RND_ADJ_FE,
+                                  is.na(RND_ADJ_FE),
+                                  median(RND_ADJ_FE, na.rm = TRUE)))
+
+```
+
+
+```{r}
+# Confirming the missing values have been replaced with the median
+df2018to20 %>%
+summarise(count = sum(is.na(RND_ADJ_FE)))
+```
+
+```{r}
+# Inspecting emissions
+ggplot(data = df2018to20, aes(CO2..g.mi.))+geom_histogram()
+
+```
+
+The distribution of CO2.g.mi is close to normal distribution, so it can be fit to a linear model.However, the CO2.g.mi data contains 831 missing values that need to be cleaned. For this case, the missing values were replaced with the median of the CO2.g.mi data.
+
+
+```{r}
+# Number of missing CO2.g.mi values
+df2018to20 %>%
+summarise(count = sum(is.na(CO2..g.mi.)))
+
+# mutate missing values, and modify the dataframe
+df2018to20 <- df2018to20 %>%
+  mutate(CO2..g.mi. = replace(CO2..g.mi.,
+                                  is.na(CO2..g.mi.),
+                                  median(CO2..g.mi., na.rm = TRUE)))
+
+# The cleaned data histogram
+ggplot(data = df2018to20, aes(CO2..g.mi.))+geom_histogram()
+
+```
+
+
+#### Outlier detection on the CO2..g.mi using a box plot
+```{r}
+ggplot(data = df2018to20, mapping = aes(x = "",y = CO2..g.mi.)) +
+geom_boxplot()
+
+# Extracting the potential outliers
+
+outliers <- boxplot.stats(df2018to20$CO2..g.mi.)$out
+min(outliers)
+sum(outliers > 812.5)
+```
+
+The extracted potential outliers are 217 in total. This is equal to 1.94% of the total observations.The minimum outlier value being 628.88. However, cross-checking with the CO2 emission histogram, the outliers lie beyond 812.5. These values are thirteen and equal 0.12% of the total observations. The dataframe was mutated to exclude these 13 values. 
+```{r}
+# Exclude CO2 emission values greater than 812.5 as outliers
+# df2010to12 <- df2010to12[-c(df2010to12$CO2..g.mi. > 812.5)]
+
+dim(df2018to20)
+```
+
+# principal components
+# 2010 - 2012 dataframe
+```{r}
+xdf2010to12 <- cbind(df2010to12$Test.Veh.Displacement..L.,df2010to12$Rated.Horsepower, df2010to12$X..of.Cylinders.and.Rotors, df2010to12$X..of.Gears, df2010to12$Equivalent.Test.Weight..lbs..,df2010to12$Axle.Ratio, df2010to12$N.V.Ratio, df2010to12$Test.Fuel.Type.Cd, df2010to12$THC..g.mi., df2010to12$CO..g.mi., df2010to12$CO2..g.mi.,df2010to12$NOx..g.mi., df2010to12$CH4..g.mi., df2010to12$N2O..g.mi., df2010to12$RND_ADJ_FE, df2010to12$FE.Bag.1,df2010to12$FE.Bag.2, df2010to12$FE.Bag.3, df2010to12$Target.Coef.A..lbf., df2010to12$Target.Coef.B..lbf.mph., df2010to12$Target.Coef.C..lbf.mph..2., df2010to12$Set.Coef.A..lbf., df2010to12$Set.Coef.B..lbf.mph., df2010to12$Set.Coef.C..lbf.mph..2.)
+
+write.csv(xdf2010to12,'xdf2010to12.csv')
+Num2010_12 <- read.csv("xdf2010to12.csv")
+pcdf2010to12 <- princomp(xdf2010to12,cor = TRUE, scores = TRUE)
+summary(pcdf2010to12)
+plot(pcdf2010to12)
+attributes(pcdf2010to12)
+```
+
+
+# 2014 - 2016 dataframe
+```{r}
+xdf2014to16 <- cbind(df2014to16$Test.Veh.Displacement..L.,df2014to16$Rated.Horsepower, df2014to16$X..of.Cylinders.and.Rotors, df2014to16$X..of.Gears, df2014to16$Equivalent.Test.Weight..lbs..,df2014to16$Axle.Ratio, df2014to16$N.V.Ratio, df2014to16$Test.Fuel.Type.Cd, df2014to16$THC..g.mi., df2014to16$CO..g.mi., df2014to16$CO2..g.mi.,df2014to16$NOx..g.mi., df2014to16$CH4..g.mi., df2014to16$N2O..g.mi., df2014to16$RND_ADJ_FE, df2014to16$FE.Bag.1,df2014to16$FE.Bag.2, df2014to16$FE.Bag.3, df2014to16$Target.Coef.A..lbf., df2014to16$Target.Coef.B..lbf.mph., df2014to16$Target.Coef.C..lbf.mph..2., df2014to16$Set.Coef.A..lbf., df2014to16$Set.Coef.B..lbf.mph., df2014to16$Set.Coef.C..lbf.mph..2.)
+
+write.csv(xdf2014to16,'xdf2014to16.csv')
+Num2014_16 <- read.csv("xdf2014to16.csv")
+pcdf2014to16 <- princomp(xdf2014to16,cor = TRUE, scores = TRUE)
+summary(pcdf2014to16)
+plot(pcdf2014to16)
+attributes(pcdf2014to16)
+```
+
+# 2018 - 2020 dataframe
+```{r}
+xpc2018to2020 <- cbind(df2018to20$Test.Veh.Displacement..L.,df2018to20$Rated.Horsepower, df2018to20$X..of.Cylinders.and.Rotors, df2018to20$X..of.Gears, df2018to20$Equivalent.Test.Weight..lbs..,df2018to20$Axle.Ratio, df2018to20$N.V.Ratio, df2018to20$Test.Fuel.Type.Cd, df2018to20$THC..g.mi., df2018to20$CO..g.mi., df2018to20$CO2..g.mi.,df2018to20$NOx..g.mi., df2018to20$CH4..g.mi., df2018to20$N2O..g.mi., df2018to20$RND_ADJ_FE, df2018to20$FE.Bag.1,df2018to20$FE.Bag.2, df2018to20$FE.Bag.3, df2018to20$Target.Coef.A..lbf., df2018to20$Target.Coef.B..lbf.mph., df2018to20$Target.Coef.C..lbf.mph..2., df2018to20$Set.Coef.A..lbf., df2018to20$Set.Coef.B..lbf.mph., df2018to20$Set.Coef.C..lbf.mph..2.)
+
+write.csv(xpc2018to2020,'xpc2018to2020.csv')
+Num2018_20 <- read.csv("xpc2018to2020.csv")
+pc2018to2020 <- princomp(xpc2018to2020,cor = TRUE, scores = TRUE)
+summary(pc2018to2020)
+plot(pc2018to2020)
+attributes(pc2018to2020)
+
+```
+
+Selection of the principle components was based on cumulative proportion >= 85%. Based on this rule, 2010-12 dataframe had ten principle components, 2014-16 had fourteen principle components, and 2018-20 dataframe had fourteen principal components.
+#Once the principle components were diagnosed for all the three dataframes, the dimension reduction techniques are performed
+# Grouping similar vehicles using the reduced dimension
+#2010 - 2012 dataframe
+```{r}
+principalcomps10_12 <- pcdf2010to12$scores[, 1:13]
+groups <- kmeans(principalcomps10_12, 6)
+attributes(groups)
+write.csv(principalcomps10_12,'principalcomps10_12.csv')
+pc2010_12 <- read.csv("principalcomps10_12.csv")
+
+write.csv(groups$cluster,'clusters10_12.csv')
+clusters10_12 <- read.csv("clusters10_12.csv")
+```
+
+
+# 2014 - 2016 dataframe
+```{r}
+principalcomps14_16 <- pcdf2014to16$scores[, 1:14]
+groups2 <- kmeans(principalcomps14_16, 6)
+attributes(groups2)
+write.csv(principalcomps14_16,'principalcomps14_16.csv')
+pc2014_16 <- read.csv("principalcomps14_16.csv")
+
+write.csv(groups2$cluster,'clusters14_16.csv')
+clusters14_16 <- read.csv("clusters14_16.csv")
+
+
+```
+
+
+# 2018 - 2020 dataframe
+```{r}
+principalcomps18_20 <- pc2018to2020$scores[, 1:14]
+groups3 <- kmeans(principalcomps18_20, 6)
+attributes(groups3)
+write.csv(principalcomps18_20,'principalcomps18_20.csv')
+pc2018_20 <- read.csv("principalcomps18_20.csv")
+
+write.csv(groups3$cluster,'clusters18_20.csv')
+clusters2018_20 <- read.csv("clusters18_20.csv")
+```
+
+# Categorical data + principal components + clusters
+```{r}
+# 2010 - 2012 non-numerical dataframe
+xyzdf2010to12 = subset(df2010to12, select=-c(Test.Veh.Displacement..L.,Rated.Horsepower,X..of.Cylinders.and.Rotors,X..of.Gears,Equivalent.Test.Weight..lbs..,Axle.Ratio, N.V.Ratio, Test.Fuel.Type.Cd, THC..g.mi., CO..g.mi., CO2..g.mi.,NOx..g.mi., CH4..g.mi., N2O..g.mi., RND_ADJ_FE, FE.Bag.1,FE.Bag.2, FE.Bag.3, Target.Coef.A..lbf.,Target.Coef.B..lbf.mph.,Target.Coef.C..lbf.mph..2.,Set.Coef.A..lbf.,Set.Coef.B..lbf.mph.,Set.Coef.C..lbf.mph..2.))
+
+# merging 2010 - 2012 non-numerical dataframe with the principal components and clusters data
+final2010_12 <- cbind(xyzdf2010to12,pc2010_12,clusters10_12)
+# deleting the X columns
+
+final2010_12 <- subset(final2010_12, select = -c(X))
+final2010_12 <- subset(final2010_12, select = -c(X))
+# Viewing a subset of the final data
+
+head(final2010_12)
+
+#2014-2016 non-numerical dataframe
+xyzdf2014to16 = subset(df2014to16, select=-c(Test.Veh.Displacement..L.,Rated.Horsepower,X..of.Cylinders.and.Rotors,X..of.Gears,Equivalent.Test.Weight..lbs..,Axle.Ratio, N.V.Ratio, Test.Fuel.Type.Cd, THC..g.mi., CO..g.mi., CO2..g.mi.,NOx..g.mi., CH4..g.mi., N2O..g.mi., RND_ADJ_FE, FE.Bag.1,FE.Bag.2, FE.Bag.3, Target.Coef.A..lbf.,Target.Coef.B..lbf.mph.,Target.Coef.C..lbf.mph..2.,Set.Coef.A..lbf.,Set.Coef.B..lbf.mph.,Set.Coef.C..lbf.mph..2.))
+final2014_16 <- cbind(xyzdf2014to16,pc2014_16,clusters14_16)
+
+# deleting the X columns
+final2014_16 <- subset(final2014_16, select = -c(X))
+
+final2014_16 <- subset(final2014_16, select = -c(X))
+# Viewing a subset of the final data
+head(final2014_16)
+
+#2018-2020 non-numerical dataframe
+xyzdf2018to20 = subset(df2018to20, select=-c(Test.Veh.Displacement..L.,Rated.Horsepower,X..of.Cylinders.and.Rotors,X..of.Gears,Equivalent.Test.Weight..lbs..,Axle.Ratio, N.V.Ratio, Test.Fuel.Type.Cd, THC..g.mi., CO..g.mi., CO2..g.mi.,NOx..g.mi., CH4..g.mi., N2O..g.mi., RND_ADJ_FE, FE.Bag.1,FE.Bag.2, FE.Bag.3, Target.Coef.A..lbf.,Target.Coef.B..lbf.mph.,Target.Coef.C..lbf.mph..2.,Set.Coef.A..lbf.,Set.Coef.B..lbf.mph.,Set.Coef.C..lbf.mph..2.))
+final2018_20 <- cbind(xyzdf2018to20,pc2018_20,clusters2018_20)
+
+# deleting the X columns
+final2018_20 <- subset(final2018_20, select = -c(X))
+final2018_20 <- subset(final2018_20, select = -c(X))
+
+# Viewing a subset of the final data
+head(final2018_20)
+
+```
+
+# Descriptive analytics for each group
+# Time Period 2010-2012
+
+```{r}
+grouping2010to12 <- cbind(df2010to12,clusters10_12)
+grouping2010to12 <- subset(grouping2010to12, select = -c(X))
+grouping010to12 <- subset(grouping2010to12, select = -c(X))
+
+ggplot(grouping010to12, aes(x)) +
+  geom_bar() + xlab('Groups') + ylab('Number of Cars') + 
+   ggtitle('Distribution of Cars by groups')
+
+ggplot(data=grouping010to12, aes(x=grouping010to12$Rated.Horsepower, y=grouping010to12$CO2..g.mi., color=x)) +geom_point()+labs(x= "Horse Power", y="CO2 emissions")
+
+```
+The above histogram for the years 2010 to 2012 shows that the highest number of cars are in group 2 and overall, group 1,2, and 3 has the highest number of cars.
+
+The trend of the scatter plot displays that higher the horse power results in higher CO2 emissions which in real world would make sense since higher horse power means a more powerful engine which would lead to a higher overall emission of gases leading to higher emission of CO2 and for the years 2010 to 2012 the maximum data point are between around 125 horsepower to almost closer to 500 horsepowerand the highest being close to the range of 1250 horsepower with a alarmingly high CO2 emission.
+
+# Time Period 2014-2016
+
+```{r}
+grouping2014to16 <- cbind(df2014to16,clusters14_16)
+grouping2014to16 <- subset(grouping2014to16, select = -c(X))
+grouping014to16 <- subset(grouping2014to16, select = -c(X))
+
+ggplot(grouping014to16, aes(x)) +
+  geom_bar() + xlab('Groups') + ylab('Number of Cars') + 
+   ggtitle('Distribution of Cars by groups 2014-16')
+
+ggplot(data=grouping014to16, aes(x=grouping014to16$Rated.Horsepower, y=grouping014to16$CO2..g.mi., color=x)) +geom_point()+labs(x= "Horse Power", y="CO2 emissions")
+
+
+```
+In this case, for the years 2014 to 2016 the histogram displays the highest number of vehicles in group 3. This histogram almost looks like a bell curve and the higher number of cars in group 3 and 4.
+
+Here, if you take a look at the scatterplot, the trend is logically sound wherein, the CO2 emissions increases if the horsepower of the vehicle is high.The maximum amount of data points are in the range of 125 horsepower to close to 600 horsepower with the highest being at closer to 1250 with a very high CO2 emission rate.
+
+### Time Period 2018-2020
+
+```{r}
+grouping2018to20 <- cbind(df2018to20,clusters2018_20)
+
+grouping018to20 <- subset(grouping2018to20, select = -c(X))
+
+ggplot(grouping018to20, aes(x)) +
+  geom_bar() + xlab('Groups') + ylab('Number of Cars') + 
+   ggtitle('Distribution of Cars by groups 2018-20')
+
+
+```
+The histogram here displays the highest number of cars in group 4 with a uniform level for group 5 and 6 and very low number of cars for group 3. Where as, group 2 and 1 are relatively high.
+```{r}
+ggplot(data=grouping018to20, aes(x=grouping018to20$Rated.Horsepower, y=grouping018to20$CO2..g.mi., color=x)) +geom_point()+labs(x= "Horse Power", y="CO2 emissions")
+```
+For the dataset for years 2018 to 2020, if you take a look at the scatterplot, the trend depicts that as the horsepower of the cars increase the CO2 emissions increase too.The maximum amount of data points are in the range of 110 horsepower to close to 550 horsepower with the highest being at at 1500, highest among all the three datasets with a very high CO2 emission rate.This leads to the conclusion that in the most recent years the CO2 emssions have alarmingly increased.
+
+
+# Predictive modelling
+
+# 2010-2012 Period
+
+```{r}
+modelA <- lm(df2010to12$RND_ADJ_FE~Tested.Transmission.Type, data = df2010to12)
+modelA
+```
+
+### 2014-2016 Period
+
+```{r}
+modelB <- lm(df2014to16$RND_ADJ_FE~Tested.Transmission.Type, data = df2014to16)
+modelB
+```
+
+### 2018-2020 Period
+
+```{r}
+modelC <- lm(df2014to16$RND_ADJ_FE~Tested.Transmission.Type, data = df2014to16)
+modelC
+
+```
+
